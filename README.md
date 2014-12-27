@@ -13,10 +13,6 @@ iTunesApi is a simple, synchronous/asynchronous API controller and object for se
 [![License](https://img.shields.io/cocoapods/l/iTunesApi.svg?style=flat)](http://cocoadocs.org/docsets/iTunesApi)
 [![Platform](https://img.shields.io/cocoapods/p/iTunesApi.svg?style=flat)](http://cocoadocs.org/docsets/iTunesApi)
 
-## Usage
-
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
-
 ## Requirements
 
 - AFNetworking
