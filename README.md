@@ -6,6 +6,8 @@ iTunesApi is a simple, synchronous/asynchronous API controller and object for se
 - **ITunesSearchApi**: Use this class to search in the iTunes Store (Music) songs, albums and artist.
 - **ITunesFeedsApi**: Use this class to get top album or songs in the iTunes Store (Music). 
 
+Documentation : [iTunesApiDocs](http://cocoadocs.org/docsets/iTunesApi) 
+
 # iTunesApi
 
 [![CI Status](http://img.shields.io/travis/Eric Pinet/iTunesApi.svg?style=flat)](https://travis-ci.org/Eric Pinet/iTunesApi)
