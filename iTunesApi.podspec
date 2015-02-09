@@ -29,6 +29,6 @@ Pod::Spec.new do |s|
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  s.dependency 'AFNetworking', '~> 1.3.4'
+  s.dependency 'AFNetworking',
   s.dependency 'RestKit', '~> 0.23.1'
 end
