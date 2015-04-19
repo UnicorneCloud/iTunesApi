@@ -22,72 +22,60 @@
  */
 @property (nonatomic, copy) NSString *wrapperType;
 
-
 /**
  *  collection type must be Album
  */
 @property (nonatomic, copy) NSString *collectionType;
-
 
 /**
  *  unique artist id
  */
 @property (nonatomic, copy) NSString *artistId;
 
-
 /**
  *  unique collection id (album)
  */
 @property (nonatomic, copy) NSString *collectionId;
-
 
 /**
  *  Astist's name
  */
 @property (nonatomic, copy) NSString *artistName;
 
-
 /**
  *  Collection's name
  */
 @property (nonatomic, copy) NSString *collectionName;
-
 
 /**
  *  Collection's censored name
  */
 @property (nonatomic, copy) NSString *collectionCensoredName;
 
-
 /**
  *  Artist view url
  */
 @property (nonatomic, copy) NSString *artistViewUrl;
-
 
 /**
  *  Collection view url
  */
 @property (nonatomic, copy) NSString *collectionViewUrl;
 
-
 /**
  *  Album artwork 60 px.
  */
 @property (nonatomic, copy) NSString *artworkUrl60;
-
 
 /**
  *  Album artwork 100 px.
  */
 @property (nonatomic, copy) NSString *artworkUrl100;
 
-
 /**
  *  Collection price
  */
 @property (nonatomic, copy) NSString *collectionPrice;
-
 
 /**
  *  The Recording Industry Association of America (RIAA) parental advisory for the content returned by the search request.
@@ -121,10 +109,18 @@
  */
 @property (nonatomic, copy) NSDate *releaseDate;
 
-
 /**
  *  Primary genre for this album collection
  */
 @property (nonatomic, copy) NSString *primaryGenreName;
+
+/**
+ *  Return URL of Artwork with custom quality.
+ *
+ *  @param quality Needed quality. (Sample: @"300x300-100")
+ *
+ *  @return url for this artwork with custom quality.
+ */
+- (NSString*) getArtworkUrlCustomQuality:(NSString*) quality;
 
 @end

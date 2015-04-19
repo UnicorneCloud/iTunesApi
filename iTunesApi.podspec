@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "iTunesApi"
-  s.version          = "0.1.0"
+  s.version          = "0.2.0"
   s.summary          = "iTunesApi, asynchronous API controller for the iTunes Search API and iTunes Feeds."
   s.description      = "iTunesApi is a simple, synchronous/asynchronous API controller and object for searching the iTunes Search API and iTunes Feeds."
   s.homepage         = "https://github.com/ericpinet/iTunesApi"

@@ -72,7 +72,7 @@
     [cell title].text = cur.collectionName;
     [cell artist].text = cur.artistName;
     
-    id path = [cur artworkUrl100];
+    id path = [cur getArtworkUrlCustomQuality:@"100x100-75"];
     NSURL *url = [NSURL URLWithString:path];
     NSData *data = [NSData dataWithContentsOfURL:url];
     UIImage *img = [[UIImage alloc] initWithData:data];
