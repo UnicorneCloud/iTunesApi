@@ -19,7 +19,7 @@
 @property (nonatomic, copy) NSString *keyPath;
 @property (nonatomic, strong, readwrite) id expectedValue;
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping;
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping NS_DESIGNATED_INITIALIZER;
 @end
 
 @interface RKKeyPathClassObjectMappingMatcher : RKObjectMappingMatcher
@@ -27,15 +27,29 @@
 @property (nonatomic, copy) NSString *keyPath;
 @property (nonatomic, readwrite) Class expectedClass;
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping;
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping NS_DESIGNATED_INITIALIZER;
 
+@end
+
+@interface RKKeyPathValueMapObjectMappingMatcher : RKObjectMappingMatcher
+@property (nonatomic, copy) NSString *keyPath;
+@property (nonatomic, copy) NSDictionary *valueMap;
+
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping NS_DESIGNATED_INITIALIZER;
 @end
 
 @interface RKPredicateObjectMappingMatcher : RKObjectMappingMatcher
 @property (nonatomic, strong) NSPredicate *predicate;
 
-- (id)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping;
+- (instancetype)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping NS_DESIGNATED_INITIALIZER;
 @end
+
+@interface RKBlockObjectMatchingMatcher : RKObjectMappingMatcher
+@property (nonatomic, copy) NSArray *possibleMappings;
+@property (nonatomic, copy) RKObjectMapping *(^block)(id representation);
+- (instancetype)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block NS_DESIGNATED_INITIALIZER;
+@end
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,12 +65,22 @@
     return [[RKKeyPathClassObjectMappingMatcher alloc] initWithKeyPath:keyPath expectedClass:expectedClass objectMapping:objectMapping];
 }
 
++ (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping
+{
+    return [[RKKeyPathValueMapObjectMappingMatcher alloc] initWithKeyPath:keyPath expectedValueMap:valueToObjectMapping];
+}
+
 + (instancetype)matcherWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
 {
     return [[RKPredicateObjectMappingMatcher alloc] initWithPredicate:predicate objectMapping:objectMapping];
 }
 
-- (id)init
++ (instancetype)matcherWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block
+{
+    return [[RKBlockObjectMatchingMatcher alloc] initWithPossibleMappings:mappings block:block];
+}
+
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -71,6 +95,12 @@
     return self;
 }
 
+- (NSArray *)possibleObjectMappings
+{
+    RKObjectMapping *mapping = self.objectMapping;
+    return mapping ? @[mapping] : nil;
+}
+
 - (BOOL)matches:(id)object
 {
     return NO;
@@ -80,7 +110,7 @@
 
 @implementation RKKeyPathObjectMappingMatcher
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(keyPath);
     NSParameterAssert(expectedValue);
@@ -111,7 +141,7 @@
 
 @implementation RKKeyPathClassObjectMappingMatcher
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(keyPath);
     NSParameterAssert(expectedClass);
@@ -139,9 +169,48 @@
 
 @end
 
+@implementation RKKeyPathValueMapObjectMappingMatcher
+
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping
+{
+    NSParameterAssert(keyPath);
+    NSParameterAssert(valueToObjectMapping.count > 0);
+    self = [super init];
+    if (self) {
+        self.keyPath = keyPath;
+        self.valueMap = valueToObjectMapping;
+    }
+    
+    return self;
+}
+
+- (NSArray *)possibleObjectMappings
+{
+    return [self.valueMap allValues];
+}
+
+- (BOOL)matches:(id)object
+{
+    id value = [object valueForKeyPath:self.keyPath];
+    RKObjectMapping *mapping = (self.valueMap)[value];
+    if (mapping) {
+        self.objectMapping = mapping;
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p when `%@` in '%@'>", NSStringFromClass([self class]), self, self.keyPath, [self.valueMap allKeys]];
+}
+
+@end
+
 @implementation RKPredicateObjectMappingMatcher
 
-- (id)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
+- (instancetype)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(predicate);
     NSParameterAssert(objectMapping);
@@ -162,6 +231,43 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p when '%@' objectMapping: %@>", NSStringFromClass([self class]), self, self.predicate, self.objectMapping];
+}
+
+@end
+
+@implementation RKBlockObjectMatchingMatcher
+
+- (instancetype)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block
+{
+    NSParameterAssert(block);
+    self = [super init];
+    if (self) {
+        self.block = block;
+        self.possibleMappings = mappings;
+    }
+    
+    return self;
+}
+
+- (NSArray *)possibleObjectMappings
+{
+    return self.possibleMappings;
+}
+
+- (BOOL)matches:(id)object
+{
+    RKObjectMapping *mapping = self.block(object);
+    if (mapping) {
+        self.objectMapping = mapping;
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p when '%@'>", NSStringFromClass([self class]), self, self.block];
 }
 
 @end

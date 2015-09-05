@@ -9,9 +9,9 @@
 
 Pod::Spec.new do |s|
   s.name             = "iTunesApi"
-  s.version          = "0.1.0"
+  s.version          = "0.2.1"
   s.summary          = "iTunesApi, asynchronous API controller for the iTunes Search API and iTunes Feeds."
-  s.description      = "iTunesApi is a simple, asynchronous API controller and object for searching the iTunes Search API and iTunes Feeds."
+  s.description      = "iTunesApi is a simple, synchronous/asynchronous API controller and object for searching the iTunes Search API and iTunes Feeds."
   s.homepage         = "https://github.com/ericpinet/iTunesApi"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
@@ -30,5 +30,5 @@ Pod::Spec.new do |s|
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'AFNetworking', '~> 1.3.4'
-  s.dependency 'RestKit', '~> 0.23.1'
+  s.dependency 'RestKit', '~> 0.24.1'
 end
